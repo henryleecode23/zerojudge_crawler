@@ -16,54 +16,77 @@ class zj_crawler():
 
         self.soup = bs4.BeautifulSoup(self.data, "html.parser")
     
-    # 標題
-    def get_title(self):
+        # 標題
         problem_title = self.soup.find(id= "problem_title")
         problem_id = self.soup.find("div", class_="h1")
         title = ""
         for t in range(5):
             title += problem_id.text[t]
         title+=problem_title.string
-        return title
+        self.title = title
 
-    # 敘述
-    def get_problem_content(self):
+        # 敘述
         problem_content = self.soup.find(id = "problem_content").text
-        return problem_content
+        self.problem_content = problem_content
 
-    # 輸入說明
-    def get_input_illustrate(self):
+        # 輸入說明
         input_illustrate = self.soup.find(id = "problem_theinput").text
-        return input_illustrate
+        self.input_illustrate = input_illustrate
 
-    # 輸出說明
-    def get_output_illustrate(self):
+        # 輸出說明
         output_illustrate = self.soup.find(id = "problem_theoutput").text
-        return output_illustrate
+        self.output_illustrate = output_illustrate
 
-    # 範例輸入
-    def get_ex_input(self):
+        # 範例輸入
         items = self.soup.find_all("pre")
         counter = 0
+        ex_input_list = []
         for i in range(0,len(items), 2):
             counter += 1
-            print(f"範例輸入#{counter}: ",end="")
-            print(items[i].text.replace("\n",""))
+            text = items[i].text
+            if "\n" in text:
+                ex_input_list.append(text)
+            else:
+                ex_input_list.append(text+"\n")
+        self.ex_input_list = ex_input_list
 
-    # 範例輸出
-    def get_ex_output(self):
+
+        # 範例輸出
         items = self.soup.find_all("pre")
         counter = 0
+        ex_output_list = []
         for i in range(1,len(items), 2):
             counter += 1
-            print(f"範例輸出#{counter}: ",end="")
-            print(items[i].text.replace("\n",""))
-
-    # 測資長度
-    def get_test_case_quantity(self):
+            text = items[i].text
+            if "\n" in text:
+                ex_output_list.append(text)
+            else:
+                ex_output_list.append(text+"\n")
+        self.ex_output_list = ex_output_list
+ 
+        # 範例測資長度
         items = self.soup.find_all("pre")
-        return int(len(items)/2)
+        ex_test_case_quantity = int(len(items)/2)
+        self.ex_test_case_quantity = ex_test_case_quantity
 
+        # 題目標籤
+        tags = self.soup.find("span",class_="tag")
+        tags = str(tags)
+        tags_soup = bs4.BeautifulSoup(tags, "html.parser")
+        tags = tags_soup.find_all("a")
+        tags_list = []
+        for t in range(len(tags)):
+            tags_list.append(tags[t].text)
+        self.tags_list = tags_list
+        
 
-a001 = zj_crawler("a001")
+a001 = zj_crawler("a024")
 
+# print(a001.title)
+# print(a001.problem_content)
+# print(a001.input_illustrate)
+# print(a001.output_illustrate)
+# print(a001.ex_input_list)
+# print(a001.ex_output_list)
+# print(a001.ex_test_case_quantity)
+print(a001.tags_list)
